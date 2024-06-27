@@ -1,7 +1,17 @@
 
 from flet import *
+from docx import Document
+
+#WORD
+
+
+
 
 def main(page):
+    page.window_width = 400
+    page.window_height = 600
+    page.update()
+
     dict_values = {
         'contratante' :'',
         'medida_judicial':'',
@@ -32,6 +42,25 @@ def main(page):
                 return
         print("Já e possivel criar o contrato")
 
+        criar_contrato(dict_values)
+
+    def criar_contrato(dados_cliente):
+        # Carrega o modelo de contrato existente
+        
+        document = Document("./contrato.docx")
+
+        # Preenche o documento com os dados do cliente
+        for paragraph in document.paragraphs:
+            for key, value in dados_cliente.items():
+                if key in paragraph.text:
+                    paragraph.text = paragraph.text.replace(key, value)
+
+        # Salva o documento preenchido
+        nome_arquivo_saida = "./contrato_preenchido.docx"
+        document.save(nome_arquivo_saida)
+        print(f"Contrato salvo como '{nome_arquivo_saida}'")
+    
+
 
     page.banner = Banner(
         bgcolor=colors.AMBER_100,
@@ -56,7 +85,7 @@ def main(page):
     prolabore = TextField(label="Prolabore", prefix_text='R$ ')
     honorario = TextField(label="Porcentagem", suffix_text=' %')
     comarca = TextField(label="Comarca")
-    data = TextField(label="XX/XX/XXXX")
+    data = TextField(label="Data")
     botao_gerar = FilledButton(text="Gerar Contrato", on_click=gera_contrato)
 
     page.add(
